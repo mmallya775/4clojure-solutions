@@ -201,3 +201,175 @@
    (second (reverse x))) (list 1 2 3 4 5))
 
 
+;; Problem 21, Nth Elements
+;;
+;; Write a function which returns the Nth element from a sequence.
+;;
+;;(= (__ '(4 5 6 7) 2) 6)
+;;(= (__ [:a :b :c] 0) :a)
+;;(= (__ [1 2 3 4] 1) 2)
+;;(= (__ '([1 2] [3 4] [5 6]) 2) [5 6])
+
+
+((fn [v n]
+   (get (zipmap (range (count v)) (vec v)) n)) '(4 5 6 7) 2)
+
+
+
+;; Problem 22, Count a Sequence
+;;
+;; Write a function which returns the total number of elements in a sequence.
+;;
+;;(= (__ '(1 2 3 3 1)) 5)
+;;(= (__ "Hello World") 11)
+;;(= (__ [[1 2] [3 4] [5 6]]) 3)
+;;(= (__ '(13)) 1)
+;;(= (__ '(:a :b :c)) 3)
+
+
+((fn [vs]
+   (->> vs
+        (mapcat #(vector %2 %1) (range))
+        last
+        inc)) '(1 2 3 3 1))
+
+
+
+
+;; Problem 23, Reverse a Sequence
+;;
+;;Write a function which reverses a sequence.
+;;
+;;(= (__ [1 2 3 4 5]) [5 4 3 2 1])
+;;(= (__ (sorted-set 5 7 2 7)) '(7 5 2))
+;;(= (__ [[1 2][3 4][5 6]]) [[5 6][3 4][1 2]])
+
+
+((fn [ins]
+   (reduce #(cons %2 %1) [] ins)
+   ) [1 2 3 4 5])
+
+
+
+
+
+;; Problem 24, Sum It All Up
+;;
+;; Write a function which returns the sum of a sequence of numbers.
+;;
+;;(= (__ [1 2 3]) 6)
+;;(= (__ (list 0 -2 5 5)) 8)
+;;(= (__ #{4 2 1}) 7)
+;;(= (__ '(0 0 -1)) -1)
+;;(= (__ '(1 10 3)) 14)
+
+
+((fn [x]
+   (reduce + x)) [1 2 3])
+
+
+;; Problem 25, Find the odd numbers
+;;
+;; Write a function which returns only the odd numbers from a sequence.
+;;
+;;(= (__ #{1 2 3 4 5}) '(1 3 5))
+;;(= (__ [4 2 1 6]) '(1))
+;;(= (__ [2 2 4 6]) '())
+;;(= (__ [1 1 1 3]) '(1 1 1 3))
+
+(filter odd? #{1 2 3 4 5})
+
+
+
+;; Problem 26, Fibonacci Sequence
+;;
+;; Write a function which returns the first X fibonacci numbers.
+;;
+;;(= (__ 3) '(1 1 2))
+;;(= (__ 6) '(1 1 2 3 5 8))
+;;(= (__ 8) '(1 1 2 3 5 8 13 21))
+
+
+((fn [n]
+   (take n
+         ((fn fib [a b]
+            (lazy-seq
+              (cons a (fib b (+ a b))))) 1 1))) 8)
+
+
+
+
+
+;; Problem 27, Palindrome Detector
+;;
+;; Write a function which returns true if the given sequence is a palindrome. Hint: "racecar" does not equal '(\r \a \c \e \c \a \r)
+;;
+;;(false? (__ '(1 2 3 4 5)))
+;;(true? (__ "racecar"))
+;;(true? (__ [:foo :bar :foo]))
+;;(true? (__ '(1 1 3 3 1 1)))
+;;(false? (__ '(:a :b :c)))
+
+
+((fn [x]
+   (let [seq-forward  (seq x)
+         seq-backward (reverse seq-forward)]
+     (if (= seq-forward seq-backward)
+       true
+       false))) "racecar")
+
+
+
+;; Problem 28, Flatten a Sequence
+;;
+;; Write a function which flattens a sequence.
+;;
+;;(= (__ '((1 2) 3 [4 [5 6]])) '(1 2 3 4 5 6))
+;;(= (__ ["a" ["b"] "c"]) '("a" "b" "c"))
+;;(= (__ '((((:a))))) '(:a))
+
+
+
+
+
+
+
+
+
+;; Problem 29, Get the Caps
+;;
+;; Write a function which takes a string and returns a new string containing only the capital letters.
+;;
+;;(= (__ "HeLlO, WoRlD!") "HLOWRD")
+;;(empty? (__ "nothing"))
+;;(= (__ "$#A(*&987Zf") "AZ")
+
+((fn [x]
+   (apply str (
+                filter
+                #(re-find (re-pattern "[A-Z]") (str %))
+                x
+                ))) "HeLlO, WoRlD!")
+
+
+
+
+;; Problem 30, Compress a Sequence
+;;
+;; Write a function which removes consecutive duplicates from a sequence.
+;;
+;;(= (apply str (__ "Leeeeeerrroyyy")) "Leroy")
+;;(= (__ [1 1 2 3 3 2 2 3]) '(1 2 3 2 3))
+;;(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))
+
+
+((fn [x]
+   (seq (reduce (fn [x1 x2]
+                  (if (= (last x1) x2)
+                    x1
+                    (conj x1 x2))
+                  )
+                [] x))) [[1 2] [1 2] [3 4] [1 2]])
+
+
+
