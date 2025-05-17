@@ -338,7 +338,8 @@
 
 ;; Problem 29, Get the Caps
 ;;
-;; Write a function which takes a string and returns a new string containing only the capital letters.
+;; Write a function which takes a string and returns a new string
+;; containing only the capital letters.
 ;;
 ;;(= (__ "HeLlO, WoRlD!") "HLOWRD")
 ;;(empty? (__ "nothing"))
@@ -501,6 +502,235 @@
 
 
 ((fn [& nums]
-   (->> (seq nums)
+   (->> nums
         sort
         last)) 30 20)
+
+
+
+
+
+;; Problem 39, Interleave Two Seqs
+;;
+;; Write a function which takes two sequences and returns the first
+;; item from each, then the second item from each, then the third, etc.
+;;
+;;(= (__ [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))
+;;(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))
+;;(= (__ [1 2 3 4] [5]) [1 5])
+;;(= (__ [30 20] [  25 15]) [30 25 20 15])
+
+
+(= (mapcat #(list %1 %2) [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))
+
+
+
+
+;; Problem 40, Interpose a Seq
+;;
+;; Write a function which separates the items of a sequence by an arbitrary value.
+;;
+;;(= (__ 0 [1 2 3]) [1 0 2 0 3])
+;;(= (apply str (__ ", " ["one" "two" "three"])) "one, two, three")
+;;(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])
+
+
+
+((fn [r c]
+   (-> (map (fn [e] (vector e r)) c)
+       flatten
+       butlast
+       vec)
+   ) :z [:a :b :c :d])
+
+
+
+
+;; Problem 41, Drop Every Nth Item
+;;
+;; Write a function which drops every Nth item from a sequence.
+;;
+;;(= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])
+;;(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])
+;;(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])
+
+
+((fn [c n]
+   (->> (zipmap (range 1 (inc (count c))) c)
+        (filter (fn [[k _]]
+                  (if (= (rem k n) 0)
+                    false
+                    true)
+                  ))
+        (mapv #(second %))))
+ [1 2 3 4 5 6 7 8] 3)
+
+
+
+;; Problem 42, Factorial Fun
+;;
+;; Write a function which calculates factorials.
+;;
+;;(= (__ 1) 1)
+;;(= (__ 3) 6)
+;;(= (__ 5) 120)
+;;(= (__ 8) 40320)
+
+
+((fn [x]
+   (->> (range 1 (inc x))
+        (apply *))) 8)
+
+
+
+;; Problem 43, Reverse Interleave
+;;
+;; Write a function which reverses the interleave process into x number of subsequences.
+;;
+;;(= (__ [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))
+;;(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))
+;;(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))
+
+;apply will open up the partitioned list
+;then map list to each element of each coll
+
+((fn [col p]
+   (->> (partition p col)
+        (apply map list))) (range 9) 3)
+
+
+
+
+
+
+
+
+;; Problem 44, Rotate Sequence
+;;
+;; Write a function which can rotate a sequence in either direction.
+;;
+;;(= (__ 2 [1 2 3 4 5]) '(3 4 5 1 2))
+;;(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))
+;;(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))
+;;(= (__ 1 '(:a :b :c)) '(:b :c :a))
+;;(= (__ -4 '(:a :b :c)) '(:c :a :b))
+
+
+
+
+((fn [p col]
+   (if (pos? p)
+     (apply concat (reverse (split-at (rem p (count col)) col)))
+     (apply concat (reverse (split-at (- (count col) (rem (abs p) (count col))) col)))
+     )
+   ) -2 [1 2 3 4 5])
+
+
+
+
+
+;; Problem 45, Intro to Iterate
+;;
+;; The iterate function can be used to produce an infinite lazy sequence.
+;;
+;;(= __ (take 5 (iterate #(+ 3 %) 1)))
+
+
+'(1 4 7 10 13)
+
+
+
+
+;; Problem 46, Flipping out
+;;
+;; Write a higher-order function which flips the order of the arguments of an input function.
+;;
+;;(= 3 ((__ nth) 2 [1 2 3 4 5]))
+;;(= true ((__ >) 7 8))
+;;(= 4 ((__ quot) 2 8))
+;;(= [1 2 3] ((__ take) [1 2 3 4 5] 3))
+
+
+(= true (((fn [func]
+            #(func %2 %1))
+          >) 7 8))
+
+
+
+
+
+
+
+
+;; Problem 47, Contain Yourself
+;;
+;; The contains? function checks if a KEY is present in a given collection.
+;; This often leads beginner clojurians to use it incorrectly with
+;; numerically indexed collections like vectors and lists.
+;;
+;;(contains? #{4 5 6} __)
+;;(contains? [1 1 1 1 1] __)
+;;(contains? {4 :a 2 :b} __)
+;;(not (contains? [1 2 4] __))
+
+
+(contains? [1 2 3 4] 4)                                     ; checks keys only not values
+
+
+
+
+
+
+
+
+;; Problem 48, Intro to some
+;;
+;; The some function takes a predicate function and a collection.
+;; It returns the first logical true value of (predicate x) where x is
+;; an item in the collection.
+;;
+;;(= __ (some #{2 7 6} [5 6 7 8]))
+;;(= __ (some #(when (even? %) %) [5 6 7 8]))
+
+;;;;; in case a set is being used as predicate all the
+
+
+6
+
+(some #{2 7 6} [5 6 7 8])
+
+split-at
+
+
+;; Problem 49, Split a sequence
+;;
+;; Write a function which will split a sequence into two parts.
+;;
+;;(= (__ 3 [1 2 3 4 5 6]) [[1 2 3] [4 5 6]])
+;;(= (__ 1 [:a :b :c :d]) [[:a] [:b :c :d]])
+;;(= (__ 2 [[1 2] [3 4] [5 6]]) [[[1 2] [3 4]] [[5 6]]])
+
+
+((fn [n col]
+   [(vec (take n col)) (vec (drop n col))])
+ 3 [1 2 3 4 5 6])
+
+
+
+
+;; Problem 50, Split by Type
+;;
+;; Write a function which takes a sequence consisting of items with
+;; different types and splits them up into a set of homogeneous
+;; sub-sequences. The internal order of each sub-sequence should be maintained,
+;; but the sub-sequences themselves can be returned in any order (this is why
+;; 'set' is used in the test cases).
+;;
+;;(= (set (__ [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})
+;;(= (set (__ [:a "foo"  "bar" :b])) #{[:a :b] ["foo" "bar"]})
+;;(= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})
+
+
+((fn [a]
+   (->> (group-by type a)
+        (map second))) [[1 2] :a [3 4] 5 6 :b])
